@@ -1,0 +1,116 @@
+### **📖 Chapter 4: Finding & Reporting Bugs (Bug Bounty कैसे करें?)**  
+_(बग्स को ढूंढने और Responsible Disclosure Report लिखने की गाइड)_  
+
+---
+## **🔍 1. Bug Hunting क्या है और कैसे शुरू करें?**  
+Bug Hunting का मतलब वेबसाइट, वेब ऐप्स या APIs में Security Vulnerabilities ढूँढना और उन्हें Responsible तरीके से Report करना होता है। इसे **Bug Bounty** भी कहते हैं, जहाँ Ethical Hackers कंपनियों से इनाम के रूप में पैसे (Bounty) कमा सकते हैं।  
+
+🔹 **Bug Bounty कैसे शुरू करें?**  
+✅ **HackerOne, Bugcrowd, और Open Bug Bounty जैसे प्लेटफॉर्म पर रजिस्टर करें।**  
+✅ **OWASP Top 10 Vulnerabilities को गहराई से सीखें।**  
+✅ **CTF (Capture The Flag) Challenges Solve करें।**  
+✅ **Burp Suite और अन्य Security Testing Tools सीखें।**  
+✅ **Legal और Ethical Guidelines को Follow करें।**  
+
+---
+
+## **🔎 2. Bug Hunting का Process**  
+Bug Hunting करने के लिए एक Systematic Approach अपनाना ज़रूरी है।  
+
+### ✅ **Step 1: Target चुनना और Reconnaissance (Information Gathering) करना**  
+🔹 **Scope Define करें** – कौन-से Subdomains, APIs, और Features Test करने Allowed हैं।  
+🔹 **OSINT (Open Source Intelligence) Tools इस्तेमाल करें**  
+✔️ **Shodan.io** – Server और Ports Scan करने के लिए  
+✔️ **Wayback Machine** – वेबसाइट का पुराना Data देखने के लिए  
+✔️ **Subdomain Enumeration Tools** – जैसे `Subfinder`, `Amass`, `Assetfinder`  
+
+---
+
+### ✅ **Step 2: Automated और Manual Testing करना**  
+**Tools का इस्तेमाल करें:**  
+🛠️ **Burp Suite** – Intercept और Modify Requests करने के लिए  
+🛠️ **SQLmap** – SQL Injection चेक करने के लिए  
+🛠️ **Nmap** – Network Scanning और Open Ports ढूँढने के लिए  
+🛠️ **Nikto** – Web Server Vulnerabilities को Detect करने के लिए  
+
+⚡ **Manual Testing Techniques:**  
+✔️ वेबसाइट के Input Fields में **Payloads Inject करें** और देखें कि Output कैसा आ रहा है।  
+✔️ Hidden Parameters और APIs को Enumerate करें।  
+✔️ JavaScript Files और Source Code Analyze करें (Console में `fetch()` और `XHR` Requests देखें)।  
+
+---
+
+### ✅ **Step 3: Vulnerability का Proof-of-Concept (PoC) बनाना**  
+जब भी कोई Vulnerability मिले, तो उसका **PoC (Proof of Concept)** तैयार करें ताकि Bug को Reproduce करना आसान हो।  
+
+✅ **PoC Report में क्या-क्या Include करें?**  
+✔️ **Vulnerability का नाम** (जैसे XSS, SQLi, CSRF, आदि)  
+✔️ **Impact (इससे क्या नुकसान हो सकता है?)**  
+✔️ **Step-by-Step Exploit करने का तरीका**  
+✔️ **Screenshots और Video PoC (अगर ज़रूरी हो तो)**  
+✔️ **Fix करने के लिए Recommendations**  
+
+---
+
+### ✅ **Step 4: Bug Report Submit करना (Responsible Disclosure)**  
+Bug मिलने के बाद उसे Proper तरीके से Report करना ज़रूरी होता है।  
+
+🔹 **Bug Bounty Platforms पर Submit करें:**  
+✔️ **HackerOne**  
+✔️ **Bugcrowd**  
+✔️ **Intigriti**  
+✔️ **Open Bug Bounty**  
+
+🔹 **Bug Report का Example:**  
+```markdown
+### Bug Title: Stored XSS in User Profile Section
+
+#### 💡 Summary:
+A stored XSS vulnerability was found in the user profile section, which allows an attacker to execute JavaScript on other users’ browsers.
+
+#### 🔍 Steps to Reproduce:
+1. Login to the application and go to the profile update page.
+2. In the "Name" field, enter the following payload:
+   ```<script>alert('Hacked!');</script>```
+3. Save the profile and visit the profile page.
+4. The JavaScript executes in other users' browsers.
+
+#### 🛠️ Impact:
+- Attacker can steal session cookies.
+- Can deface user profiles.
+- Can redirect users to phishing sites.
+
+#### ✅ Recommended Fix:
+- Properly escape user input using `htmlspecialchars()` or `sanitizeInput()` functions.
+- Implement Content Security Policy (CSP).
+
+#### 📷 Proof of Concept (PoC):
+![XSS PoC Screenshot](screenshot-link)
+```
+➡️ **अगर Report अच्छी होगी तो Bounty मिलने के Chances ज़्यादा होते हैं।**  
+
+---
+
+## **🔎 3. Ethical Guidelines और Best Practices**  
+✅ **किसी भी वेबसाइट पर Bug Bounty Testing से पहले उसका Policy Page पढ़ें।**  
+✅ **सिर्फ Public Programs को Target करें।**  
+✅ **Bug मिलने पर उसे Responsible तरीके से Report करें, ना कि Publicly Leak करें।**  
+✅ **Bug के Fix होने तक Details को Private रखें।**  
+✅ **Legal Boundaries का ध्यान रखें और किसी भी प्रकार की Unethical Hacking ना करें।**  
+
+---
+
+## **🔍 Summary (संक्षेप में)**  
+🚀 **Bug Bounty में Success पाने के लिए:**  
+✔️ Reconnaissance और Enumeration अच्छे से करें।  
+✔️ OWASP Top 10 को गहराई से सीखें।  
+✔️ Web Security Testing Tools में Mastery हासिल करें।  
+✔️ Proof-of-Concept (PoC) Reports को Clear और Well-Structured रखें।  
+✔️ Ethical Hacking के Principles को Follow करें।  
+
+---
+
+## **🔜 Next Chapter: Real-World Bug Hunting Examples**  
+अगले चैप्टर में हम **Real-World Bug Hunting Cases** को देखेंगे और सीखेंगे कि Pro Ethical Hackers ने कैसे बड़े Bugs ढूंढे और लाखों की Bounty कमाई! 💰  
+
+### ❓ **कोई सवाल हो तो पूछो?** 😊
