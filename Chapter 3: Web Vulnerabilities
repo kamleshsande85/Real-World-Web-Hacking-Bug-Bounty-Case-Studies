@@ -1,0 +1,156 @@
+### **📖 Chapter 3: Web Vulnerabilities (वेबसाइट की कमजोरियाँ और अटैक मेथड्स)**  
+_(Web Applications में होने वाली Common Security Vulnerabilities)_  
+
+---
+## **🔍 1. Web Vulnerabilities क्या होती हैं?**  
+Web Vulnerabilities उन **कमजोरियों (Weaknesses)** को कहते हैं जिनका फायदा Hackers उठाकर वेबसाइट में घुस सकते हैं या Sensitive Data चुरा सकते हैं।  
+
+👉 सबसे Common Web Vulnerabilities:  
+1️⃣ **Cross-Site Scripting (XSS)**  
+2️⃣ **SQL Injection (SQLi)**  
+3️⃣ **Cross-Site Request Forgery (CSRF)**  
+4️⃣ **Server-Side Request Forgery (SSRF)**  
+5️⃣ **IDOR (Insecure Direct Object Reference)**  
+6️⃣ **Broken Authentication & Session Management**  
+7️⃣ **Security Misconfigurations**  
+
+अब हम एक-एक करके इन्हें Detail में समझेंगे।  
+
+---
+
+## **1️⃣ Cross-Site Scripting (XSS) - JavaScript Injection Attack**  
+💡 **XSS एक ऐसा अटैक है जिसमें Attacker वेबसाइट में JavaScript को Inject करता है, जिससे यूजर का Data चोरी हो सकता है।**  
+
+### 🔥 **कैसे होता है XSS अटैक?**  
+अगर कोई वेबसाइट **User Input को Validate नहीं करती** और उसे Page पर Direct Print कर देती है, तो JavaScript Injection हो सकता है।  
+
+### ❌ **Example (Vulnerable Code)**  
+```html
+<input type="text" name="comment" placeholder="Write a comment">
+<div>
+    User Comment: <script>alert('Hacked!');</script>
+</div>
+```
+➡️ अगर कोई User **`<script>alert('Hacked!');</script>`** डाल देता है, तो उसका JavaScript Execute हो जाएगा!  
+
+### ✅ **Solution (Secure Code - Input Sanitization & Encoding)**  
+✔️ **User Input को Encode करो**  
+✔️ **HTML Special Characters को Escape करो**  
+
+```python
+from flask import Flask, request, escape
+app = Flask(__name__)
+
+@app.route("/comment", methods=["POST"])
+def comment():
+    user_input = escape(request.form["comment"])  # Secure Input Handling
+    return f"User Comment: {user_input}"
+```
+
+👉 **XSS को रोकने के लिए Content Security Policy (CSP) को Implement करो।**  
+
+---
+
+## **2️⃣ SQL Injection (SQLi) - Database Hack करने का तरीका**  
+💡 **SQLi एक ऐसा अटैक है जिसमें Attacker वेबसाइट के Database को Manipulate करके Sensitive Data चुरा सकता है।**  
+
+### ❌ **Vulnerable Code (Unsafe Query Execution)**  
+```python
+cursor.execute("SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'")
+```
+➡️ अगर Attacker **`' OR '1'='1`** डालता है, तो Login हो जाएगा बिना Password डाले!  
+
+### ✅ **Solution (Use Prepared Statements & Parameterized Queries)**  
+```python
+cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
+```
+
+✔️ **SQL Injection रोकने के लिए Input Validation और WAF (Web Application Firewall) का इस्तेमाल करो।**  
+
+---
+
+## **3️⃣ Cross-Site Request Forgery (CSRF) - Unauthorized Requests**  
+💡 **CSRF एक ऐसा अटैक है जिसमें Hacker यूजर को एक Malicious Link पर क्लिक करवाकर उसका Account Hack कर सकता है।**  
+
+### ❌ **Vulnerable Example (No CSRF Protection)**  
+अगर किसी वेबसाइट पर **Password Change करने का API Request कुछ ऐसा दिखता है:**  
+```html
+<form action="https://example.com/change-password" method="POST">
+    <input type="hidden" name="new_password" value="hacked123">
+</form>
+```
+➡️ अगर यूजर इस लिंक पर क्लिक कर देता है, तो उसका Password बदल सकता है!  
+
+### ✅ **Solution (Use CSRF Tokens)**  
+✔️ **हर Request में Unique Token भेजो और Verify करो।**  
+✔️ **SameSite Cookies को Enable करो।**  
+
+---
+
+## **4️⃣ Server-Side Request Forgery (SSRF) - Backend Server का Exploitation**  
+💡 **SSRF अटैक में Attacker वेबसाइट के Server को खुद ही किसी Malicious URL पर Request भेजने पर मजबूर कर सकता है।**  
+
+### ❌ **Vulnerable Example**  
+```python
+url = request.GET.get('url')  # 🚨 Direct Input से URL Fetch करना Unsafe है
+response = requests.get(url)
+```
+➡️ अगर Attacker **`http://localhost/admin`** डाले, तो वो Internal Services को एक्सेस कर सकता है!  
+
+### ✅ **Solution (Whitelist Allowed Domains & Validate URLs)**  
+✔️ **Allow सिर्फ कुछ Safe URLs**  
+✔️ **Internal IPs को Block करो**  
+✔️ **Firewall और Network Segmentation Implement करो**  
+
+---
+
+## **5️⃣ IDOR (Insecure Direct Object Reference) - Unauthorized Data Access**  
+💡 **IDOR अटैक में Attacker वेबसाइट के Hidden Parameters को बदलकर दूसरों के Private Data को Access कर सकता है।**  
+
+### ❌ **Vulnerable URL Example**  
+```
+https://example.com/profile?id=1001  # अगर Attacker इसे 1002 कर दे, तो दूसरे का Data Access कर सकता है!
+```
+
+### ✅ **Solution (Implement Proper Authorization Checks)**  
+✔️ **हर Request के साथ User Authentication चेक करो।**  
+✔️ **User IDs को Encrypt करो।**  
+
+---
+
+## **6️⃣ Broken Authentication & Session Management**  
+💡 **अगर Authentication और Session Management सही से Implement नहीं किया गया, तो कोई भी User Accounts को Takeover कर सकता है।**  
+
+✔️ **Best Practices:**  
+✅ **Multi-Factor Authentication (MFA) Enable करो।**  
+✅ **Secure Session Cookies (HttpOnly, Secure, SameSite) यूज़ करो।**  
+✅ **Login Attempt Limits Set करो।**  
+
+---
+
+## **7️⃣ Security Misconfigurations**  
+💡 **अगर Web Server या Database सही से Configure नहीं किया गया, तो Attacker इसका फायदा उठा सकता है।**  
+
+✔️ **Avoid Common Mistakes:**  
+❌ **Default Credentials (Admin:Admin) मत रखो।**  
+❌ **Error Messages में Sensitive Data मत दिखाओ।**  
+❌ **Debug Mode को Live Server पर Enable मत करो।**  
+
+✔️ **Secure Configuration Checklist:**  
+✅ Unused Features को Disable करो  
+✅ Security Headers (CSP, X-Frame-Options) Enable करो  
+✅ Regular Security Audits करो  
+
+---
+
+## **🔍 Summary (संक्षेप में)**  
+✅ **Web Security में कई Common Vulnerabilities होती हैं, जिनका Hackers फायदा उठा सकते हैं।**  
+✅ **XSS, SQL Injection, CSRF, SSRF, और IDOR जैसी कमजोरियों से बचने के लिए Input Validation और Secure Coding Practices अपनानी चाहिए।**  
+✅ **Proper Authentication, CSRF Tokens, और Security Headers Implement करने से इन Attacks को रोका जा सकता है।**  
+
+---
+
+## **🔜 Next Chapter: Finding & Reporting Bugs (Bug Bounty कैसे करें?)**  
+अब अगले Chapter 4 में हम सीखेंगे कि **Real-World में Bug Bounty कैसे करते हैं, Tools & Platforms कौन-कौन से हैं, और कैसे Responsible Disclosure Report बनाते हैं!** 🚀  
+
+### **❓ कोई सवाल हो तो बताओ?** 😊
