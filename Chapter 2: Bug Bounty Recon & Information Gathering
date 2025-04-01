@@ -1,1 +1,127 @@
+### **📖 Chapter 2: Bug Bounty Recon & Information Gathering (विस्तृत समझ)**  
 
+इस चैप्टर में हम **Reconnaissance (Recon)** और **Information Gathering** के बारे में गहराई से समझेंगे, जो **Bug Bounty Hunting** का सबसे पहला और महत्वपूर्ण चरण है।  
+
+---
+
+## **🕵️‍♂️ 1. Reconnaissance (Recon) क्या है?**  
+**Recon** का मतलब है **Target वेबसाइट या सिस्टम के बारे में जानकारी इकट्ठा करना**, ताकि उसकी **कमजोरियों (Vulnerabilities)** को ढूंढा जा सके।  
+
+### **🔹 Recon के दो प्रकार:**  
+1. **Passive Recon** → बिना Target को Directly Touch किए जानकारी इकट्ठा करना (जैसे Google Dorking, WHOIS Lookup)।  
+2. **Active Recon** → Target से Directly Interact करके डेटा निकालना (जैसे Port Scanning, Directory Bruteforcing)।  
+
+---
+
+## **🛠️ 2. Passive Recon Techniques (बिना टच किए जानकारी निकालना)**  
+
+### **🔎 A. Google Dorking (Advanced Google Search)**  
+Google में कुछ **Special Queries** डालकर **Sensitive Files, Admin Panels, Open Directories** ढूंढी जा सकती हैं।  
+
+#### **कुछ महत्वपूर्ण Google Dorks:**  
+| **Google Dork** | **क्या ढूंढता है?** |
+|----------------|------------------|
+| `site:example.com filetype:pdf` | Example.com पर सभी PDF फाइल्स |
+| `intitle:"index of" "parent directory"` | Open Directories (जहाँ Sensitive Files हो सकती हैं) |
+| `inurl:admin login` | Admin Login Pages |
+| `ext:php intext:"password"` | PHP फाइल्स जिनमें "password" लिखा हो |
+
+**👉 Example:**  
+अगर आप `site:facebook.com inurl:admin` सर्च करेंगे, तो Facebook के **Admin Panels** मिल सकते हैं।  
+
+---
+
+### **🛰️ B. WHOIS Lookup (Domain की जानकारी निकालना)**  
+**WHOIS Lookup** से किसी **Domain का Owner, Registration Date, Expiry Date, और IP Address** पता चलता है।  
+
+**Tools:**  
+- [who.is](https://who.is/)  
+- [whois.domaintools.com](https://whois.domaintools.com/)  
+
+**👉 Example:**  
+`whois google.com` डालने पर Google के **Domain Registrar, Server IP, और Contact Email** मिलेंगे।  
+
+---
+
+### **🌎 C. Subdomain Enumeration (छुपे हुए Subdomains ढूंढना)**  
+किसी वेबसाइट के **Subdomains** (जैसे `admin.example.com`, `dev.example.com`) ढूंढना बहुत जरूरी है, क्योंकि **छोटे Subdomains कम Secure होते हैं**।  
+
+#### **Subdomain ढूंढने के Tools:**  
+1. **Sublist3r** → `sublist3r -d example.com`  
+2. **Amass** → `amass enum -passive -d example.com`  
+3. **Assetfinder** → `assetfinder example.com`  
+
+**👉 Example:**  
+`subfinder -d paypal.com` से PayPal के सभी Subdomains मिलेंगे, जैसे:  
+- `developer.paypal.com`  
+- `admin.paypal.com`  
+- `api.paypal.com`  
+
+---
+
+## **🚀 3. Active Recon Techniques (Directly Target से जानकारी निकालना)**  
+
+### **🖥️ A. Port Scanning (Open Ports ढूंढना)**  
+**Nmap** टूल से **वेबसाइट के Open Ports और Running Services** पता की जाती हैं।  
+
+**Command:**  
+```bash
+nmap -sV -p 80,443,22,21 example.com
+```
+**Output:**  
+```
+PORT    STATE SERVICE    VERSION
+80/tcp  open  http       Apache httpd
+443/tcp open  ssl/https  Nginx
+22/tcp  open  ssh        OpenSSH
+```
+**मतलब:**  
+- `Port 80` → HTTP (वेबसाइट)  
+- `Port 443` → HTTPS (Secure Website)  
+- `Port 22` → SSH (Remote Login)  
+
+---
+
+### **🌐 B. Directory & File Bruteforcing (छुपी हुई फाइल्स ढूंढना)**  
+कुछ **Files & Directories** छुपी होती हैं, जैसे:  
+- `/admin/` → Admin Panel  
+- `/backup/` → Database Backup  
+- `/config.php` → Configuration File  
+
+**Tools:**  
+1. **Gobuster** → `gobuster dir -u example.com -w wordlist.txt`  
+2. **Dirbuster** → GUI-based Directory Scanner  
+3. **FFUF** → `ffuf -u https://example.com/FUZZ -w wordlist.txt`  
+
+**👉 Example:**  
+`gobuster dir -u https://example.com -w /usr/share/wordlists/dirb/common.txt`  
+
+---
+
+### **📂 C. Wayback Machine (पुरानी वेबसाइट देखना)**  
+**[web.archive.org](https://web.archive.org/)** पर **वेबसाइट का पुराना डेटा** देख सकते हैं, जहाँ **Deleted Pages, Old Admin Panels** मिल सकते हैं।  
+
+**👉 Example:**  
+`https://web.archive.org/web/*/example.com`  
+
+---
+
+## **🔍 4. Recon का मकसद क्या है?**  
+✅ **Website के Weak Points** ढूंढना  
+✅ **Hidden Files, Admin Panels, API Endpoints** खोजना  
+✅ **Sensitive Data (जैसे Emails, Passwords, Backups)** निकालना  
+✅ **Attack Surface (हमला करने के लिए जगह) बढ़ाना**  
+
+---
+
+## **🔥 Chapter 2 Summary (संक्षेप में)**  
+✅ **Recon** Bug Hunting का **सबसे पहला और जरूरी स्टेप** है।  
+✅ **Passive Recon** (Google Dorking, WHOIS) से **बिना टच किए** जानकारी निकाली जाती है।  
+✅ **Active Recon** (Nmap, Gobuster) से **Directly Target** से डेटा निकाला जाता है।  
+✅ **Subdomains, Open Ports, Hidden Files** ढूंढकर **Vulnerabilities** पाई जा सकती हैं।  
+
+**अगला कदम:**  
+- **Chapter 3 (Open Redirect) पढ़ें** → जानें कि कैसे वेबसाइट यूजर्स को मैलिशियस लिंक पर भेज सकती है।  
+- **Kali Linux पर Nmap, Gobuster इंस्टॉल करें** और एक वेबसाइट को Scan करना शुरू करें!  
+
+क्या आपको किसी Specific Tool या Technique के बारे में और जानना है? 😊
